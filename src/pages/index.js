@@ -3,10 +3,9 @@ import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
-export default function Home({ allData }) {
-  console.log("🚀 ~ file: index.js ~ line 6 ~ Home ~ allData", allData)
-  const router = useRouter()
 
+export default function Home({ allData }) {
+  const router = useRouter()
   return (
     <div className={styles.container}>
       <Head>
@@ -42,34 +41,19 @@ export default function Home({ allData }) {
 export async function getServerSideProps(context) {
   const cookies = context.req.headers.cookie;
   const token = context.req.cookies['token']
-  console.log("🚀 ~ file: index.js ~ line 33 ~ getServerSideProps ~ token", token)
-  console.log("🚀 ~ file: index.js ~ line 27 ~ getServerSideProps ~ cookies", cookies)
-  // await new Promise(((resolve) => {
-  //   setTimeout(() => {
-  //     resolve({
-  //       props: {
-  //         name: 123,
-  //         allData: 11111111111
-  //       }
-  //     })
-  //   }, 2000);
-  // }))
-  let res = null
-  let arr = []
-  try {
-    res = await fetch('http://localhost:8020/user', { method: 'get', headers: { token: token } })
-    console.log(res);
-    if (res.status === 200) {
-      arr = await res.json()
+  if (!token) {
+    console.log("🚀 ~ file: index.js ~ line 48 ~ getServerSideProps ~ 没有登录", '没有登录')
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
     }
-  } catch (error) {
-    console.log(JSON.stringify(error));
   }
-  console.log("🚀 ~ file: index.js ~ line 34 ~ getServerSideProps ~ res", res)
   return {
     props: {
       name: 123,
-      allData: arr
+      allData: []
     }
   }
 }

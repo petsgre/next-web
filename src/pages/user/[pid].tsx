@@ -1,5 +1,6 @@
 import { useRouter } from "next/router"
 import { useState } from "react"
+import { getUserById } from "../../api/services"
 
 export default function User(props) {
   const { info } = props
@@ -15,26 +16,12 @@ export default function User(props) {
   )
 }
 export async function getServerSideProps(context) {
-  const token = context.req.cookies["token"]
-  console.log(
-    "🚀 ~ file: [pid].js ~ line 13 ~ getServerSideProps ~ context.req",
-    context.query
-  )
   const pid = context.query.pid
-  let res = null
-  let info = {}
-  try {
-    res = await fetch("http://localhost:8020/user/" + pid, {
-      method: "get",
-      headers: { token: token },
-    })
-    console.log(res)
-    if (res.status === 200) {
-      info = await res.json()
-    }
-  } catch (error) {
-    console.log(error)
-  }
+  const token = context.req.cookies["token"]
+  let info = null
+  await getUserById(pid, { headers: { token } }).then((res) => {
+    info = res
+  })
   return {
     props: {
       name: 123,
